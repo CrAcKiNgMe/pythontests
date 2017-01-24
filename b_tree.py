@@ -1,23 +1,37 @@
-#No. 03 - Maximum Sum of All Sub-arrays
-"""
-If we have a deep understanding of algorithm, we may solve this problem with dynamic programming.
-If function f(i) stands for the maximum sum of a sum-array ended with the ith number,
- what it is to get is max[f(i)].
-"""
+#No. 04 - all possible path from root to leaf
+
+import Queue
+
+q = []
+qq = []
 
 
-a = list([1, -2, 3, 10, -4, 7, 2, -5])
+class TreeNode:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+    def enumpath(self):
+        q.append(self.value)
+
+        if(not (self.left) and not(self.right)):
+            print q
+        if(self.left):
+            self.left.enumpath()
+        if(self.right):
+            self.right.enumpath()
+        q.pop();
 
 
+a = TreeNode("a")
+a.left = TreeNode("b")
+a.right = TreeNode("c")
+a.left.left  = TreeNode("d")
+a.left.right  = TreeNode("e")
+a.right.left  = TreeNode("f")
+a.right.right  = TreeNode("g")
 
+a.enumpath()
 
-
-for i in range(len(a) - 1):
-    if(a[i] > 0):
-        a[i+1] += a[i]
-
-for i in range(len(a) - 1):
-    if(a[i+1] > a[0]):
-        a[0] = a[i+1]
-
-print a[0]
+print qq
