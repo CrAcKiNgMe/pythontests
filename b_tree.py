@@ -1,41 +1,56 @@
+# -*- coding: utf-8 -*-
 """
-Dynamic Programming | Set 4 (Longest Common Subsequence)
-We have discussed Overlapping Subproblems and Optimal Substructure properties in Set 1 and Set 2 respectively. We also discussed one example problem in Set 3. Let us discuss Longest Common Subsequence (LCS) problem as one more example problem that can be solved using Dynamic Programming.
+Dynamic Programming | Set 5 (Edit Distance)
+Given two strings str1 and str2 and below operations that can performed on str1. Find minimum number of edits (operations) required to convert ‘str1’ into ‘str2’.
 
-LCS Problem Statement: Given two sequences, find the length of longest subsequence present in both of them. A subsequence is a sequence that appears in the same relative order, but not necessarily contiguous. For example, "abc", "abg", "bdf", "aeg", "acefg", .. etc are subsequences of "abcdefg". So a string of length n has 2^n different possible subsequences.
+Insert
+Remove
+Replace
 
+What are the subproblems in this case?
+The idea is process all characters one by one staring from either from left or right sides of both strings.
+Let we traverse from right corner, there are two possibilities for every pair of character being traversed.
 
+m: Length of str1 (first string)
+n: Length of str2 (second string)
+If last characters of two strings are same, nothing much to do. Ignore last characters and get count for remaining strings. So we recur for lengths m-1 and n-1.
+Else (If last characters are not same), we consider all operations on ‘str1’, consider all three operations on last character of first string, recursively compute minimum cost for all three operations and take minimum of three values.
+Insert: Recur for m and n-1
+Remove: Recur for m-1 and n
+Replace: Recur for m-1 and n-1
 
-
-It is a classic computer science problem, the basis of diff (a file comparison program that outputs the differences between two files), and has applications in bioinformatics.
-
-Examples:
-LCS for input Sequences "ABCDGH" and "AEDFHR" is "ADH" of length 3.
-LCS for input Sequences "AGGTAB" and "GXTXAYB" is "GTAB" of length 4.
-
-
-1) Optimal Substructure:
-Let the input sequences be X[0..m-1] and Y[0..n-1] of lengths m and n respectively. And let L(X[0..m-1], Y[0..n-1]) be the length of LCS of the two sequences X and Y. Following is the recursive definition of L(X[0..m-1], Y[0..n-1]).
-
-If last characters of both sequences match (or X[m-1] == Y[n-1]) then
-L(X[0..m-1], Y[0..n-1]) = 1 + L(X[0..m-2], Y[0..n-2])
-
-If last characters of both sequences do not match (or X[m-1] != Y[n-1]) then
-L(X[0..m-1], Y[0..n-1]) = MAX ( L(X[0..m-2], Y[0..n-1]), L(X[0..m-1], Y[0..n-2])
 """
 
+# A Naive recursive Python program to fin minimum number
+# operations to convert str1 to str2
+def editDistance(str1, str2, m , n):
 
-list1 = list("123abc")
-list2 = list("abc123abc")
+    # If first string is empty, the only option is to
+    # insert all characters of second string into first
+    if m==0:
+         return n
 
+    # If second string is empty, the only option is to
+    # remove all characters of first string
+    if n==0:
+        return m
 
-def lcs(X, m, Y, n):
-    if(m==0 or n == 0):
-        return 0
-    if(X[m-1] == Y[n-1]):
-        return 1 + lcs(X, m-1, Y, n-1)
-    else:
-        return max(lcs(X, m-1, Y, n), lcs(X, m, Y, n-1))
+    # If last characters of two strings are same, nothing
+    # much to do. Ignore last characters and get count for
+    # remaining strings.
+    if str1[m-1]==str2[n-1]:
+        return editDistance(str1,str2,m-1,n-1)
 
+    # If last characters are not same, consider all three
+    # operations on last character of first string, recursively
+    # compute minimum cost for all three operations and take
+    # minimum of three values.
+    return 1 + min(editDistance(str1, str2, m, n-1),    # Insert
+                   editDistance(str1, str2, m-1, n),    # Remove
+                   editDistance(str1, str2, m-1, n-1)    # Replace
+                   )
 
-print lcs(list1, len(list1), list2, len(list2))
+# Driver program to test the above function
+str1 = "sunday"
+str2 = "saturday"
+print editDistance(str1, str2, len(str1), len(str2))
