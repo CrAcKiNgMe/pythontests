@@ -1,47 +1,157 @@
-# -*- coding: utf-8 -*-
-#desc
-#http://www.geeksforgeeks.org/dynamic-programming-set-6-min-cost-path/
+#-*- coding: utf-8 -*-
+import os
+import socket
+import sys
+import httplib
+
+from OpenSSL import SSL, crypto
+import requests
+
+import multiprocessing
+from multiprocessing import Pool
+import threading
+import os
+
+
+
+
+#的
+#r = requests.get('https://baidu.com/')
+
+import threading
+import time
+
+exitFlag = 0
+
+class mythread(threading.Thread):
+    def __init__(self, target = None, interval = 0.01,delay = 0, counter = 0):
+        threading.Thread.__init__(self)
+        self.interval = interval
+        self.delay    = delay
+        self.counter  = counter
+        self.target  = target
+    def run(self):
+            if(self.delay > 0):
+                time.sleep(self.delay)
+            if(self.counter == 0):
+                while 1:
+                    if(self.target):
+                        self.target()
+                    if(self.interval > 0):
+                        time.sleep(self.interval)
+            else:
+                while self.counter:
+                    if(self.target):
+                        self.target()
+                    if(self.interval > 0):
+                        time.sleep(self.interval)
+                    self.counter = self.counter - 1
+
+
+
+
+
+
+
+class MyPool:
+    def print_time(self):
+#        try:
+            r = requests.get('https://windows10.microdone.cn:5076', {"data":"asdfasdfasdfasfd"})
+            print r.text
+#        except:
+            pass
+
+    def __init__(self, cnt = 20, maxcnt = 50):
+        self.cnt = cnt
+        self.maxcnt = maxcnt
+        self.threads = [None]*cnt
+        for i in range(cnt):
+            self.threads[i] = mythread(target=self.print_time);
+    def start(self):
+        for i in range(self.cnt):
+            self.threads[i].start()
+            self.threads[i].join()
+
+
+
+
+pool = MyPool(20, 50)
+pool.start()
+
+
+# Create new threads
+
+
+
+
+
+
+
 """
-Given a cost matrix cost[][] and a position (m, n) in cost[][], write a function that returns cost of minimum cost path to reach (m, n) from (0, 0). Each cell of the matrix represents a cost to traverse through that cell. Total cost of a path to reach (m, n) is sum of all the costs on that path (including both source and destination). You can only traverse down, right and diagonally lower cells from a given cell, i.e., from a given cell (i, j), cells (i+1, j), (i, j+1) and (i+1, j+1) can be traversed. You may assume that all costs are positive integers.
 
-For example, in the following figure, what is the minimum cost path to (2, 2)?
+def verify_cb(conn, cert, errnum, depth, ok):
+    certsubject = crypto.X509Name(cert.get_subject())
+    commonname = certsubject.commonName
+    print('Got certificate: ' + commonname)
+    return ok
 
-1) Optimal Substructure
-The path to reach (m, n) must be through one of the 3 cells: (m-1, n-1) or (m-1, n) or (m, n-1). So minimum cost to reach (m, n) can be written as “minimum of the 3 cells plus cost[m][n]”.
 
-minCost(m, n) = min (minCost(m-1, n-1), minCost(m-1, n), minCost(m, n-1)) + cost[m][n]
+if len(sys.argv) < 3:
+    print('Usage: python client.py HOST PORT')
+    sys.exit(1)
+
+
+dir = os.path.dirname(sys.argv[0])
+if dir == '':
+    dir = os.curdir
+
+
+
+
+# Initialize context
+ctx = SSL.Context(SSL.SSLv23_METHOD)
+ctx.set_options(SSL.OP_NO_SSLv2)
+ctx.set_options(SSL.OP_NO_SSLv3)
+#ctx.set_verify(SSL.VERIFY_PEER, verify_cb)  # Demand a certificate
+#ctx.use_privatekey_file(os.path.join(dir, 'client.pkey'))
+#ctx.use_certificate_file(os.path.join(dir, 'client.cert'))
+#ctx.load_verify_locations(os.path.join(dir, 'CA.cert'))
+
+# Set up client
+sock = SSL.Connection(ctx, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+sock.connect((sys.argv[1], int(sys.argv[2])))
+
+while 1:
+    line = sys.stdin.readline()
+    if line == '':
+        break
+    try:
+        print line
+        sock.send(line)
+        sys.stdout.write(sock.recv(1024).decode('utf-8'))
+        sys.stdout.flush()
+#    except SSL.Error:
+#        print(" SSL.Error")
+    except SSL.ZeroReturnError:
+        print "ZeroReturnError"
+        break
+    except SSL.WantReadError:
+        print "WantReadError"
+        break
+    except SSL.WantWriteError:
+        print "WantWriteError"
+        break
+    except SSL.WantX509LookupError:
+        print "WantX509LookupError"
+        break
+    except SSL.SysCallError:
+        print "SysCallError"
+        break
+
+
+
+
+sock.shutdown()
+sock.close()
+
 """
-
-list = [ [1, 2, 3], [4, 8, 2], [1, 5, 3]]
-
-"""
-[1, 2, 3]
-[4, 8, 2]
-[1, 5, 3]
-"""
-
-
-def min(a, b, c):
-    m = a
-    if(a > b):
-        m = b
-    if(m > c):
-        m = c
-    return m
-
-
-
-
-def minpath(matrix, m, n):
-
-    if(m == 1 and n == 1):
-        return matrix[0][0]
-    if(m < 1 or n < 1):
-        return 999999999999999999999999
-    else:
-        n =  min(minpath(matrix, m-1, n-1),minpath(matrix, m, n-1),minpath(matrix, m-1, n)) + matrix[m-1][n-1]
-
-        return n
-
-
-print minpath(list, 3 , 3)
