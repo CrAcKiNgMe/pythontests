@@ -31,21 +31,21 @@ class mythread(threading.Thread):
         self.counter  = counter
         self.target  = target
     def run(self):
-            if(self.delay > 0):
-                time.sleep(self.delay)
-            if(self.counter == 0):
-                while 1:
-                    if(self.target):
-                        self.target()
-                    if(self.interval > 0):
-                        time.sleep(self.interval)
-            else:
-                while self.counter:
-                    if(self.target):
-                        self.target()
-                    if(self.interval > 0):
-                        time.sleep(self.interval)
-                    self.counter = self.counter - 1
+        if(self.delay > 0):
+            time.sleep(self.delay)
+        if(self.counter == 0):
+            while 1:
+                if(self.target):
+                    self.target()
+                if(self.interval > 0):
+                    time.sleep(self.interval)
+        else:
+            while self.counter:
+                if(self.target):
+                    self.target()
+                if(self.interval > 0):
+                    time.sleep(self.interval)
+                self.counter = self.counter - 1
 
 
 
@@ -55,10 +55,13 @@ class mythread(threading.Thread):
 
 class MyPool:
     def print_time(self):
-#        try:
-            r = requests.get('https://windows10.microdone.cn:5076', {"data":"asdfasdfasdfasfd"})
-            print r.text
-#        except:
+        try:
+
+            header = {'user-agent': 'my-app/0.0.1'}
+            r = requests.get('https://windows10.microdone.cn:5076', headers=header)
+            #r= requests.get("http://bbs.hupu.com/")#, headers=header)
+            print u"thread{0},response{1}".format(threading._get_ident(), r.headers)
+        except:
             pass
 
     def __init__(self, cnt = 20, maxcnt = 50):
@@ -68,14 +71,18 @@ class MyPool:
         for i in range(cnt):
             self.threads[i] = mythread(target=self.print_time);
     def start(self):
+
         for i in range(self.cnt):
             self.threads[i].start()
+        for i in range(self.cnt):
             self.threads[i].join()
 
 
 
 
-pool = MyPool(20, 50)
+
+
+pool = MyPool(50, 50)
 pool.start()
 
 
