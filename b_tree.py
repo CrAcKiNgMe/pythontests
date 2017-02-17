@@ -3,7 +3,8 @@ import os
 import socket
 import sys
 import httplib
-
+import sqlite3
+import random
 from OpenSSL import SSL, crypto
 import requests
 
@@ -55,21 +56,52 @@ class mythread(threading.Thread):
 
 class MyPool:
     def print_time(self):
-        try:
+
 
             header = {'user-agent': 'my-app/0.0.1'}
-            r = requests.get('https://windows10.microdone.cn:5076', headers=header)
+            r = requests.get('http://httpbin.org/get?asdf=asdf', headers=header)
             #r= requests.get("http://bbs.hupu.com/")#, headers=header)
-            print u"thread{0},response{1}".format(threading._get_ident(), r.headers)
-        except:
-            pass
+            #print u"thread{0},response{1}".format(threading._get_ident(), r.headers)
+            self.lock.acquire()
+            self.tickcnt += 1
+            print self.tickcnt
+            dbcs = self.db.cursor()
+            dbcs.execute("INSERT INTO test VALUES(\
+        {0},\
+        'sadf',\
+        1234,\
+        CURRENT_TIMESTAMP\
+        )".format(self.tickcnt\
+                  ))
+            dbcs.close()
+
+            self.lock.release()
+
 
     def __init__(self, cnt = 20, maxcnt = 50):
         self.cnt = cnt
         self.maxcnt = maxcnt
         self.threads = [None]*cnt
-        for i in range(cnt):
+        self.lock    = threading.Lock()
+        self.tickcnt = 0
+        self.db = sqlite3.connect("C:/abc/test.db", check_same_thread=False)
+        dbcs = self.db.cursor()
+
+
+        dbcs.execute("create table if not exists test(\
+            A interger,\
+            B vchar(256),\
+            C numeric(256,3),\
+            D interger\
+            )")
+        dbcs.close()
+
+
+
+        for i in range(self.cnt):
             self.threads[i] = mythread(target=self.print_time);
+    def __del__(self):
+        self.db.close();
     def start(self):
 
         for i in range(self.cnt):
@@ -82,7 +114,7 @@ class MyPool:
 
 
 
-pool = MyPool(50, 50)
+pool = MyPool(100, 100)
 pool.start()
 
 
