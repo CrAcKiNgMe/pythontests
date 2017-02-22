@@ -1,2 +1,4 @@
 .idea
 *.pyc
+capture.png
+geckodriver.log
