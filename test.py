@@ -1,65 +1,53 @@
-'''
-Transform the algebraic expression with brackets into RPN form (Reverse Polish Notation). Two-argument operators: +, -, *, /, ^ (priority from the lowest to the highest), brackets ( ). Operands: only letters: a,b,...,z. Assume that there is only one RPN form (no expressions like a*b*c).
+#PALIN - The Next Palindrome
 
-Input
+groupstr = raw_input()
+m = int(groupstr)
+data = []
+preset = []
+postset = []
+dict = {}
+seq = "abcdefghijklmnopqrstuvwxyz"
 
-t [the number of expressions <= 100]
-expression [length <= 400]
-[other expressions]
-Text grouped in [ ] does not appear in the input file.
-
-Output
-
-The expressions in RPN form, one per line.
-Example
-
-Input:
-3
-(a+(b*c))
-((a+b)*(z+x))
-((a+t)*((b+(a+c))^(c+d)))
-
-Output:
-abc*+
-ab+zx+*
-at+bac++cd+^*
-'''
-n = raw_input()
-n = int(n)
-
-dic = {"+":0,"-":0,"*":1,"/":1,"(":3, ")":3, "^":2}
-exps = []
-
-for i in range(n):
-    rawdata = raw_input()
-    rawdata = filter(None, rawdata)
-    exps.append(rawdata)
+for i in range(len(seq)):
+    dict[seq[i]] = 0
 
 
-def printexp(exp):
-    tmpstack = []
-    explist = []
-    for i in range(len(exp)):
-        if(exp[i]<= 'z' and exp[i] >= 'a'):
-            explist.append(exp[i])
-        elif(exp[i] == '('):
-            tmpstack.append(exp[i])
-        elif(exp[i] == ')'):
-            while(len(tmpstack) and tmpstack[len(tmpstack) - 1] != '('):
-                explist.append(tmpstack.pop())
-            if (len(tmpstack)):
-                tmpstack.pop()
-        elif(len(tmpstack) == 0 or dic[exp[i]] > dic[tmpstack[len(tmpstack)-1]]):
-            tmpstack.append(exp[i])
+for i in range(m):
+    n = int(raw_input())
+    tmp = []
+    tmppredic = {}
+    tmppostdic = {}
+
+    for i in range(len(seq)):
+        tmppredic[seq[i]] = 0
+    for i in range(len(seq)):
+        tmppostdic[seq[i]] = 0
+
+    for j  in range(n):
+        word = raw_input()
+        tmp.append(word)
+        tmppredic[word[0]] += 1
+        tmppostdic[word[len(word) -1]] -= 1
+    data.append(tmp)
+    preset.append(tmppredic)
+    postset.append(tmppostdic)
+
+
+for i in range(len(preset)):
+    dicttmp1 = preset[i]
+    dicttmp2 = postset[i]
+
+    ndiffer = 0;
+
+    for i in range(len(seq)):
+        if( dicttmp1[seq[i]] > 0):
+            ndiffer += dicttmp1[seq[i]] + dicttmp2[seq[i]]
         else:
-            while(len(tmpstack) and dic[exp[i]] <= dic[tmpstack[len(tmpstack)-1]]):
-                if(tmpstack[len(tmpstack) - 1] != '('):
-                    explist.append(tmpstack.pop())
-                else:
-                    break
-            tmpstack.append(exp[i])
-
-    print "".join(explist)
+            ndiffer -= dicttmp2[seq[i]]
+    if(ndiffer > 2):
+        print "The door cannot be opened."
+    else:
+        print "Ordering is possible."
 
 
 
@@ -70,10 +58,6 @@ def printexp(exp):
 
 
 
-
-
-for i in range(n):
-    printexp(exps[i])
 
 
 
